@@ -6,7 +6,7 @@
 // Salting involves adding a random string of characters, known as a salt, to the input data before hashing. The salt is unique for each piece of data being hashed. The purpose of salting is to prevent attackers from using precomputed tables, such as rainbow tables, to quickly determine the original input based on the hashed output.
 
 import mysql from "mysql2";
-// import bcrypt from "bcrypt";
+// import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 
@@ -40,7 +40,7 @@ export async function createUser(userName, password) {
     }
   });
   if (unique) {
-    const hash = password;
+    const hash = bcrypt.hashSync(password, saltRounds);
     await pool.query(
       `
         INSERT INTO UserLogins (Username, Password) VALUES (?, ?)
@@ -135,6 +135,21 @@ export async function getfoodsByID(id) {
     from UserFoods 
     where User_ID = ?
     
+    `,
+    [id]
+  );
+  return result;
+}
+
+export async function getfoodsHistoryByID(id) {
+  const [result] = await pool.query(
+    `
+    select * 
+    from UserFoods 
+    where User_ID = ?
+     order by AddedTime desc
+    limit  3
+   
     `,
     [id]
   );

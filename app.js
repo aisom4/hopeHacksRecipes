@@ -15,6 +15,7 @@ import {
   createUserInfo,
   getUserIDByUserName,
   deleteFoodByID,
+  getfoodsHistoryByID,
 } from "./database.js";
 
 export let globalUserID = null;
@@ -42,9 +43,36 @@ app.listen(port, () => {
 // 'index' page is rendered with appropriate User info
 //else
 //login page is rendered
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   if (globalUserID) {
-    res.render("index", { userData: globalUserData });
+    let foods = await getfoodsByID(globalUserID);
+    let foodData = await getfoodsHistoryByID(globalUserID);
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFats = 0;
+    let totalItems = 0;
+    let target = globalUserData.User_target_calories;
+    foods.forEach((e) => {
+      totalCalories += Number(e.Food_Calories);
+      totalProtein += Number(e.Food_Protein);
+      totalCarbs += Number(e.Food_Carbs);
+      totalFats += Number(e.Food_Fats);
+      totalItems++;
+    });
+    let remaining = target - totalCalories;
+    console.log(foodData);
+    res.render("index", {
+      userData: globalUserData,
+      totalCalories: totalCalories,
+      totalProtein: totalProtein,
+      totalCarbs: totalCarbs,
+      totalFats: totalFats,
+      totalItems: totalItems,
+      target: target,
+      remaining: remaining,
+      foodData: foodData,
+    });
   } else {
     res.render("login");
   }
@@ -96,7 +124,7 @@ app.post("/login", async (req, res) => {
 
   if (successfulLogin) {
     globalUserData = await getUserInfo(globalUserID);
-    res.render("index", { userData: globalUserData });
+    res.redirect("/");
   } else {
     res.redirect("/");
   }
@@ -277,7 +305,6 @@ async function getRecipes(query) {
     return [];
   }
 }
-
 //ROUTE HANDLING
 app.get("/recipes", async (req, res) => {
   const query = req.query.query; //grabbing query parameter from request
@@ -306,6 +333,10 @@ app.post("/recipeItems", async (req, res) => {
     console.log(error);
     res.status(500).send("ERROR ERROR ERROR");
   }
+});
+
+app.get("/aboutUs", (req, res) => {
+  res.render("about-us");
 });
 
 app.locals.userData = globalUserData;
