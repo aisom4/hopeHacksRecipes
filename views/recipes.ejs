@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/style.css" />
+    <title>Main</title>
+  </head>
+  <body>
+    <nav>
+      <form action="/recipeItems" method="post">
+        <input
+          type="text"
+          name="query"
+          id="search"
+          placeholder="What Kind of Recipe?"
+        />
+        <button type="submit" class="button">Search</button>
+      </form>
+      <img src="/images/profile.svg" class="profile" />
+    </nav>
+
+    <side-nav>
+      <img src="/images/log.png" class="logo" />
+      <a href="/"
+        ><img src="/images/dashboard.svg" class="side-icons active-icon"
+      /></a>
+      <a href="/"><img src="/images/news.svg" class="side-icons" /></a>
+      <a href="/"> <img src="/images/music-album.svg" class="side-icons" /></a>
+      <!-- <a href="/"> <img src="/images/star.svg" class="side-icons" /></a> -->
+    </side-nav>
+    <article>
+      <p>Hello Ronda!</p>
+      <h1>Healthy Recipes</h1>
+      <div class="recipeButtonsContainer">
+        <form action="/recipeItems" method="post" >
+          <input type="text" value="breakfast" name="query" class="hid">
+          <input type="submit" value="Breakfast" class="rb breakfast" >
+        </form>
+       
+        <form action="/recipeItems" method="post" >
+          <input type="text" value="lunch" name="query" class="hid">
+          <input type="submit" value="Lunch" class="rb lunch" >
+        </form>
+        <form action="/recipeItems" method="post" >
+          <input type="text" value="dinner" name="query" class="hid">
+          <input type="submit" value="Dinner"  class="rb dinner" >
+        </form>
+       <form action="/recipeItems" method="post" >
+          <input type="text" value="snack" name="query" class="hid">
+          <input type="submit" value="Snacks" class="rb snacks" >
+        </form>
+     <form action="/recipeItems" method="post" >
+          <input type="text" value="random" name="query" class="hid">
+          <input type="submit" value="All"
+           class="rb allrecipes" >
+        </form>
+      </div>
+      <div id="recipeTopSection">
+        <h3>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic, ducimus
+          quia laborum voluptas eveniet corrupti perspiciatis suscipit possimus
+          qui reprehenderit. Animi totam qui optio, voluptatum in id, neque
+          quasi et quis, ad at nam dolores dicta quia error inventore?
+          Praesentium quos sed modi qui? Odio quos possimus quam temporibus
+          quibusdam.
+        </h3>
+      </div>
+      <!-- FOOD WHEEL SIDE IMAGE -->
+      <div id="recipeTopSection">
+        <img
+          src="/images/foodGroups.png"
+          class="foodWheel"
+          alt="Food Wheel Image"
+        />
+
+        <div id="recipeCatalog">
+          <h1>Help</h1>
+
+          <h1>Search For A Recipe!</h1>
+
+          <img src="/images/recipeMainImage.jpeg" class="recipeMainImage" />
+
+          <form action="/recipeItems" method="post">
+            <input
+              type="text"
+              name="query"
+              placeholder="What Kind of Recipe?"
+            />
+            <button type="submit" class="button2">Search</button>
+          </form>
+        </div>
+      </div>
+      <div class="recipeBottomSection">
+        <h2>Nutrition is a Key Component for Health</h2>
+        <h3>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat quo
+          voluptate, repellendus sequi adipisci aliquam quidem cumque saepe
+          quaerat maxime modi quos veritatis pariatur, necessitatibus harum
+          architecto quae impedit nihil? Reprehenderit nobis possimus, quia
+          eaque laudantium non aliquid molestias corrupti.
+        </h3>
+      </div>
+
+      <div class="favRecipesCardsContainer">
+        <div class="favRecipesCards">
+          <div class="desc calories">
+            <p>1</p>
+          </div>
+          
+          <img
+            src="/images/recipeMainImage.jpeg"
+            alt="An Image of Food"
+            class="favImage"
+          />
+          <div class="favRecipeHolder">
+            <h5>What You Put In Your Body</h5>
+            <p class="recipeText">
+              Everything you eat and drink affects you in different ways. It can
+              nourish and support your body and brain or it can be a toxin. By
+              learning how different foods, beverages, and individual nutrients
+              affect you, you can create a diet that supports your specific
+              health goals.
+            </p>
+          </div>
+        </div>
+
+        <div class="favRecipesCards">
+          
+          <img
+            src="/images/recipeMainImage.jpeg"
+            alt="An Image of Food"
+            class="favImage"
+          />
+          <div class="favRecipeHolder">
+            <h5>What You Put On Your Body</h5>
+            <p>
+              What’s in the lotions, hair products, and makeup you put on your
+              body? Or the air fresheners and cleaning products you breathe in
+              every day? Many of these have ingredients that affect your
+              hormones and damage your DNA. Replacing these everyday items with
+              safer ones removes harmful toxins from your body.
+            </p>
+          </div>
+        </div>
+        <div class="favRecipesCards">
+          
+          <img
+            src="/images/recipeMainImage.jpeg"
+            alt="An Image of Food"
+            class="favImage"
+          />
+          <div class="favRecipeHolder">
+            <h5>How You Rest Your Body</h5>
+            <p>
+              Your body has to rest and recharge every day. Poor quality sleep
+              and too much stress not only wear you down, but also affect
+              everything from your hormonal balance to how your mind works.
+              Improving your sleep and reducing stress has major trickle-down
+              effects for your health.</p>
+            </p>
+          </div>
+        </div>
+        <div class="favRecipesCards">
+          <h5>How You Care For Your Body</h5>
+          <img
+            src="/images/recipeMainImage.jpeg"
+            alt="An Image of Food"
+            class="favImage"
+          />
+          <div class="favRecipeHolder">
+            
+            <p>Healing is an ongoing, holistic process. That means to feel better, live better, and achieve better health, all of your parts — body, mind, and spirit — have to be in balance. Holistic healing takes time and work, but the results are amazing and life-changing. You’ll learn how to identify the root problems that are causing your symptoms and implement ways to change them.</p>
+          </div>
+        </div>
+      </div>
+     
+    </article>
+  </body>
+</html>

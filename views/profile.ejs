@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/style.css" />
+    <title>Main</title>
+  </head>
+  <body>
+    <%- include('./partials/nav.ejs') %>
+    <article>
+      <h1>User info:</h1>
+      <div class="card">
+        <div class="holder">
+          <img src="/images/profile.svg" class="profile" />
+        </div>
+        <div class="vertical">
+          <h1>Name: <%=userData.User_name%></h1>
+          <h2>Height: <%=userData.User_height%> ft</h2>
+          <h2>weight: <%=userData.User_weight%> Lb</h2>
+          <h2>Target Calories: <%=userData.User_target_calories%></h2>
+          <form action="/logOut" method="post">
+            <input type="submit" value="LogOut" class="add" />
+          </form>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>
