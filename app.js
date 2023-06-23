@@ -2,11 +2,12 @@ import bodyParser from "body-parser";
 import express from "express";
 
 //imports bcrypt. bcrypt is used to hash and salt user passwords.
-// import bcrypt from "bcrypt";
+// import bcrypt from 'bcrypt';
 //import axios. axios in this application is used to handle API requests.
 import axios from "axios";
 
 import {
+  deleteRecipeByID,
   getfoodsByID,
   createUser,
   createFoods,
@@ -16,10 +17,13 @@ import {
   getUserIDByUserName,
   deleteFoodByID,
   getfoodsHistoryByID,
+  createRecipeList,
+  getRecipeByID,
 } from "./database.js";
 
 export let globalUserID = null;
 export let globalUserData = null;
+export let globalTheme = null;
 
 const app = express();
 const port = 3000;
@@ -61,7 +65,7 @@ app.get("/", async (req, res) => {
       totalItems++;
     });
     let remaining = target - totalCalories;
-    console.log(foodData);
+    // console.log(foodData);
     res.render("index", {
       userData: globalUserData,
       totalCalories: totalCalories,
@@ -124,6 +128,8 @@ app.post("/login", async (req, res) => {
 
   if (successfulLogin) {
     globalUserData = await getUserInfo(globalUserID);
+    globalTheme = globalUserData.User_preferences;
+    console.log(globalTheme);
     res.redirect("/");
   } else {
     res.redirect("/");
@@ -134,26 +140,60 @@ app.post("/login", async (req, res) => {
 // Takes the properties of the searched item and saves it into the database along with the appropriate userID. For later reference.
 //user is then redirected to main page (Dashboard)
 app.post("/save", (req, res) => {
-  let grams = req.body.grams;
+  if (globalUserID) {
+    let grams = req.body.grams;
 
-  let foodName = req.body.foodName;
-  let foodCalories = calculateCalories(Number(req.body.foodCalories), grams);
-  let foodProtein = calculateCalories(Number(req.body.foodProtein), grams);
-  let foodFats = calculateCalories(Number(req.body.foodFats), grams);
-  let foodCarbs = calculateCalories(Number(req.body.foodCarbs), grams);
-  let foodImage = req.body.foodImage;
+    let foodName = req.body.foodName;
+    let foodCalories = calculateCalories(Number(req.body.foodCalories), grams);
+    let foodProtein = calculateCalories(Number(req.body.foodProtein), grams);
+    let foodFats = calculateCalories(Number(req.body.foodFats), grams);
+    let foodCarbs = calculateCalories(Number(req.body.foodCarbs), grams);
+    let foodImage = req.body.foodImage;
 
-  createFoods(
-    globalUserID,
-    foodName,
-    foodCalories,
-    foodProtein,
-    foodCarbs,
-    foodFats,
-    foodImage,
-    grams
-  );
-  res.redirect("/");
+    createFoods(
+      globalUserID,
+      foodName,
+      foodCalories,
+      foodProtein,
+      foodCarbs,
+      foodFats,
+      foodImage,
+      grams
+    );
+    res.redirect("/");
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.post("/saveRecipe", (req, res) => {
+  if (globalUserID) {
+    let recipeName = req.body.recipeName;
+    let recipeImage = req.body.recipeImage;
+    let recipeCalories = req.body.recipeCalories;
+    let recipeTotalWeight = req.body.recipeTotalWeight;
+    let recipeTotalTime = req.body.recipeTotalTime;
+    let recipeYield = req.body.recipeYield;
+    let recipeIngredients = req.body.ingredients;
+    let recipeMealType = req.body.recipeMealType;
+    let RecipeURL = req.body.RecipeURL;
+
+    createRecipeList(
+      globalUserID,
+      recipeName,
+      recipeImage,
+      recipeCalories,
+      recipeTotalWeight,
+      recipeTotalTime,
+      recipeYield,
+      recipeMealType,
+      RecipeURL,
+      recipeIngredients
+    );
+    res.redirect("/");
+  } else {
+    res.redirect("/");
+  }
 });
 
 //handles get request for "/list" (Food List).
@@ -164,9 +204,11 @@ app.post("/save", (req, res) => {
 app.get("/list", async (req, res) => {
   if (globalUserID) {
     let userFoodList = await getfoodsByID(globalUserID);
+    let userRecipes = await getRecipeByID(globalUserID);
     res.render("userItems", {
       foodList: userFoodList,
       userData: globalUserData,
+      userRecipes: userRecipes,
     });
   } else {
     res.redirect("/");
@@ -208,13 +250,21 @@ app.post("/create", async (req, res) => {
   let height = req.body.height;
   let weight = req.body.weight;
   let target = Number(req.body.target);
+  let preferences = req.body.theme;
 
   if (password == passwordRepeat) {
     let User = await createUser(username, password);
     let newUserID = await getUserIDByUserName(User);
-    console.log("-------------->", newUserID);
+    // console.log('-------------->',newUserID)
     if (newUserID) {
-      await createUserInfo(newUserID, name, height, weight, target);
+      await createUserInfo(
+        newUserID,
+        name,
+        height,
+        weight,
+        target,
+        preferences
+      );
       res.redirect("/");
     } else {
       console.log("user name is not available");
@@ -230,6 +280,11 @@ app.post("/create", async (req, res) => {
 app.post("/listDelete", async (req, res) => {
   let itemID = req.body.foodID;
   await deleteFoodByID(itemID);
+  res.redirect("/list");
+});
+app.post("/listDeleteRecipe", async (req, res) => {
+  let itemID = req.body.recipeID;
+  await deleteRecipeByID(itemID);
   res.redirect("/list");
 });
 
@@ -262,6 +317,17 @@ async function getSuggestionsApi(initials) {
   }
 }
 
+async function getSuggestionsApiRecipes(initials) {
+  const url = `https://api.edamam.com/auto-complete?app_id=ec4bcbe9&app_key=c4e46792050ed99dfd8d58e9e9101c63&q=${initials}&limit=10
+  `;
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 //calls api request with search of specified item
 //if found successfully
 //object with details is returned
@@ -298,7 +364,7 @@ async function getRecipes(query) {
     const response = await axios.get(url2);
     // console.log(response);
     const data = response.data;
-    console.log(data.hits);
+    //console.log(data.hits);
     return data.hits;
   } catch (error) {
     console.error(error);
@@ -337,6 +403,10 @@ app.post("/recipeItems", async (req, res) => {
 
 app.get("/aboutUs", (req, res) => {
   res.render("about-us");
+});
+
+app.get("/blog", (req, res) => {
+  res.render("blog");
 });
 
 app.locals.userData = globalUserData;

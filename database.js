@@ -40,7 +40,7 @@ export async function createUser(userName, password) {
     }
   });
   if (unique) {
-    const hash = bcrypt.hashSync(password, saltRounds);
+    const hash = true;
     await pool.query(
       `
         INSERT INTO UserLogins (Username, Password) VALUES (?, ?)
@@ -73,14 +73,15 @@ export async function createUserInfo(
   user_name,
   user_height,
   user_weight,
-  user_target_calories
+  user_target_calories,
+  preferences
 ) {
   await pool.query(
     `
-    INSERT INTO UserInfo (User_ID,User_name, User_height, User_weight, User_target_calories, User_preferences ) VALUES ( ?, ?, ?, ?, ?, NULL)
+    INSERT INTO UserInfo (User_ID,User_name, User_height, User_weight, User_target_calories, User_preferences ) VALUES ( ?, ?, ?, ?, ?, ?)
         
         `,
-    [ID, user_name, user_height, user_weight, user_target_calories]
+    [ID, user_name, user_height, user_weight, user_target_calories, preferences]
   );
 }
 
@@ -111,6 +112,7 @@ export async function getUserInfo(id) {
     select * 
     from UserInfo 
     where User_id = ?
+
     `,
     [id]
   );
@@ -134,7 +136,21 @@ export async function getfoodsByID(id) {
     select * 
     from UserFoods 
     where User_ID = ?
-    
+    order by AddedTime desc
+    `,
+    [id]
+  );
+  return result;
+}
+
+export async function getRecipeByID(id) {
+  const [result] = await pool.query(
+    `
+    select * 
+    from UserRecipes 
+    where User_ID = ?
+    order by AddedTime desc
+
     `,
     [id]
   );
@@ -195,6 +211,36 @@ export async function createFoods(
   );
 }
 
+export async function createRecipeList(
+  User_ID,
+  recipeName,
+  recipeImage,
+  recipeCalories,
+  recipeTotalWeight,
+  recipeTotalTime,
+  recipeYield,
+  recipeMealType,
+  recipeURL,
+  recipeIngredients
+) {
+  await pool.query(
+    `
+    INSERT INTO UserRecipes (User_ID,	Recipe_Name,	Recipe_Image,	Recipe_Calories,	Recipe_TotalWeight, Recipe_TotalTime, Recipe_Yield, Recipe_MealType, Recipe_URL, Recipe_Ingredients) VALUES (?, ?, ? ,?, ?,?,?,?,?,?)
+   `,
+    [
+      User_ID,
+      recipeName,
+      recipeImage,
+      recipeCalories,
+      recipeTotalWeight,
+      recipeTotalTime,
+      recipeYield,
+      recipeMealType,
+      recipeURL,
+      recipeIngredients,
+    ]
+  );
+}
 //delete food by ID
 
 export async function deleteFoodByID(foodID) {
@@ -202,6 +248,20 @@ export async function deleteFoodByID(foodID) {
     await pool.query(
       `
         DELETE FROM UserFoods WHERE food_entry_ID = ?
+        `,
+      [foodID]
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteRecipeByID(foodID) {
+  try {
+    await pool.query(
+      `
+        DELETE FROM UserRecipes WHERE RecipeID = ?
         `,
       [foodID]
     );
